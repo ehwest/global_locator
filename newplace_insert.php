@@ -1,4 +1,6 @@
 <?php
+require_once("config.php");
+
 $data = json_decode($_REQUEST["data"]);
 $address_compponents = $data->address_components;
 
@@ -100,48 +102,58 @@ $sql = "INSERT INTO pending_registry
             ipaddress,
             uid
           ) 
-          VALUES (?, ?)";
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-$stmt = $pdo->prepare($sql);
+$stmt = mysqli_prepare($dbLink, $sql);
+// $stmt = $pdo->prepare($sql);
 
-$stmt->bindParam(1, $s10);
-$stmt->bindParam(2, $s11);
-$stmt->bindParam(3, $s12);
-$stmt->bindParam(4, $s13);
-$stmt->bindParam(5, $s14);
-$stmt->bindParam(6, $s15);
-$stmt->bindParam(7, addslashes(trim($county)));
-$stmt->bindParam(8, $s17);
-$stmt->bindParam(9, $s20);
-$stmt->bindParam(10, $s33);
-$stmt->bindParam(11, $s32);
-$stmt->bindParam(12, $s31);
-$stmt->bindParam(13, $s30);
-$stmt->bindParam(14, $s42);
-$stmt->bindParam(15, $s34);
-$stmt->bindParam(16, $s21);
-$stmt->bindParam(17, $s22);
-$stmt->bindParam(18, $realname);
-$stmt->bindParam(19, $youremail);
-$stmt->bindParam(20, $instrumental);
-$stmt->bindParam(21, $both_i_a);
-$stmt->bindParam(22, $multi_campus);
-$stmt->bindParam(23, $egalitarian);
-$stmt->bindParam(24, $lat);
-$stmt->bindParam(25, $lng);
-$stmt->bindParam(26, time());
-$stmt->bindParam(27, $s35);
-$stmt->bindParam(28, $s43);
-$stmt->bindParam(29, $ip);
-$stmt->bindParam(30, $s44);
+mysqli_stmt_bind_param(
+  $stmt,
+  "ssssssssssssssssssssssssss",
+  $s10,
+  $s11,
+  $s12,
+  $s13,
+  $s14,
+  $s15,
+  addslashes(trim($county)),
+  $s17,
+  $s20,
+  $s33,
+  $s32,
+  $s31,
+  $s30,
+  $s42,
+  $s34,
+  $s21,
+  $s22,
+  $realname,
+  $youremail,
+  $instrumental,
+  $both_i_a,
+  $multi_campus,
+  $egalitarian,
+  $lat,
+  $lng,
+  time(),
+  $s35,
+  $s43,
+  $ip,
+  $s44
+);
 
-$stmt->execute();
+mysqli_stmt_execute($stmt);
+// $stmt->execute();
 
-if ($stmt->rowCount() > 0) {
-  echo "Record inserted successfully.";
-} else {
-  echo "Error inserting record.";
-}
+$dbResult = mysqli_stmt_get_result($stmt);
+
+echo "dbResult: " . $dbResult . "<br>";
+
+// if ($stmt->rowCount() > 0) {
+//   echo "Record inserted successfully.";
+// } else {
+//   echo "Error inserting record.";
+// }
 
 function validated_searchname($input)
 {
@@ -153,3 +165,42 @@ function validated_searchname($input)
     exit();
   }
 }
+?>
+
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en" style>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+  <title>New CZ Layout</title>
+</head>
+
+<body>
+  <header id="header">
+    <div class="container">
+      <div class="row">
+        <div class="col-12 col-md-4"><a href="index.html"><img src="brand-logo.png" style="width: 100%;" /></a></div>
+        <div class="col-12 col-md-8 d-flex justify-content-center align-items-center">
+          <h3 class="text-center">New Place Inserted</h3>
+        </div>
+      </div>
+    </div>
+    <section class="d-flex justify-content-center align-items-center" style="padding: 1rem 0;"><a href="about.html" style="font-size: 12px;margin: auto 0.25rem;">About Us</a><a href="recent.html" style="font-size: 12px;margin: auto 0.25rem;">Recent Changes</a><a href="newplace.html" style="font-size: 12px;margin: auto 0.25rem;">Add New Record</a><a href="otherdirectories.html" style="font-size: 12px;margin: auto 0.25rem;">Other Directories</a><a href="login.html" style="font-size: 12px;margin: auto 0.25rem;">Admin</a></section>
+  </header>
+  <section class="py-4 py-xl-5">
+    <div class="container">
+      <div class="text-center p-4 p-lg-5">
+        <h1 class="fw-bold mb-4">Thank You!</h1>
+      </div>
+    </div>
+  </section>
+  <footer id="footer">
+    <section class="d-flex flex-column justify-content-center align-items-center flex-md-row" style="padding: 1rem 0;"><a href="about.html" style="font-size: 12px;margin: auto 0.5rem;">About Us</a><a href="recent.html" style="font-size: 12px;margin: auto 0.5rem;">Recent Changes</a><a href="newplace.html" style="font-size: 12px;margin: auto 0.5rem;">Add New Record</a><a href="otherdirectories.html" style="font-size: 12px;margin: auto 0.5rem;">Other Directories</a><a href="statisticalsummary.html" style="font-size: 12px;margin: auto 0.5rem;">Statistics</a><a href="login.html" style="font-size: 12px;margin: auto 0.5rem;">Admin</a></section>
+    <section style="padding: 1rem 0;">
+      <h6 style="text-align: center;"><span style="color: black;">Copyright @2023 All Rights Reserved</span></h6>
+    </section>
+  </footer>
+</body>
+
+</html>
