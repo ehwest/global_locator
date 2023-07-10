@@ -31,12 +31,23 @@ $s33 = $_REQUEST["homepage"];
 $s34 = $_REQUEST["hours"];
 $s35 = $_REQUEST["class"];
 
+// formatted_address extraction
+$formatted_address = $data->formatted_address;
+
 if (isset($address_components)) {
   foreach ($address_components as $component) {
     if (in_array("administrative_area_level_2", $component->types)) {
       $adminArea = $component->long_name || $component->short_name || "";
       if ($adminArea) {
         $county .= ", " . $adminArea;
+      }
+    }
+
+    // extract the country code
+    if (in_array("country", $component->types)) {
+      $countryCode = $component->short_name || "";
+      if ($countryCode) {
+        $s17 = $countryCode;
       }
     }
   }
@@ -94,18 +105,18 @@ $q .= " uid='" . 1 . "'; ";
 //                 exit();
 //        }
 
-if ($result = mysqli_query($dbLink, $q)) {
-  $numRows = mysqli_affected_rows($dbLink);
-  // Return the number of rows in result set
-  //printf("Result set has %d rows.\n",$numRows);
-  //print "INSERTED RECORD SUCCESSFULLY";
-} else {
-  print "failed to insert for some reason";
-}
-print "$numRows WAS successfully inserted, thanks!";
-// Redirect the user to another page
-header("Location: thanks.html");
-exit();
+// if ($result = mysqli_query($dbLink, $q)) {
+//   $numRows = mysqli_affected_rows($dbLink);
+//   // Return the number of rows in result set
+//   //printf("Result set has %d rows.\n",$numRows);
+//   //print "INSERTED RECORD SUCCESSFULLY";
+// } else {
+//   print "failed to insert for some reason";
+// }
+// print "$numRows WAS successfully inserted, thanks!";
+// // Redirect the user to another page
+// header("Location: thanks.html");
+// exit();
 
 // MY WORK (PREPARED SQL STATEMENT USING mysqli_prepare AND mysqli_stmt_bind_param FUNCTIONS)
 $sql = "INSERT INTO pending_registry
@@ -139,15 +150,16 @@ $sql = "INSERT INTO pending_registry
             class,
             modified,
             ipaddress,
-            uid
+            uid,
+            formatted_address
           ) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = mysqli_prepare($dbLink, $sql);
 
 mysqli_stmt_bind_param(
   $stmt,
-  "ssssssssssssssssssssssssss",
+  "sssssssssssssssssssddssisis",
   $s10,
   $s11,
   $s12,
@@ -177,14 +189,16 @@ mysqli_stmt_bind_param(
   $s35,
   $s43,
   $ip,
-  $s44
+  $s44,
+  $formatted_address,
 );
 
 mysqli_stmt_execute($stmt);
 $dbResult = mysqli_stmt_get_result($stmt);
 echo "dbResult: " . $dbResult . "<br>";
 
-header("Location: thanks.html");
+// header("Location: thanks.html");
+echo '<script>window.open("thanks.html", "_blank");</script>';
 exit();
 
 function validated_searchname($input)
