@@ -42,33 +42,72 @@ if (isset($address_components)) {
   }
 }
 
-echo "data: " . $data . "<br>";
-echo "realname: " . $realname . "<br>";
-echo "youremail: " . $youremail . "<br>";
-echo "latitude: " . $lat . "<br>";
-echo "longitude: " . $lng . "<br>";
-echo "name: " . $s10 . "<br>";
-echo "street1: " . $s11 . "<br>";
-echo "street2: " . $s12 . "<br>";
-echo "ccity: " . $s13 . "<br>";
-echo "state: " . $s14 . "<br>";
-echo "zipcode: " . $s15 . "<br>";
-echo "country: " . $country . "<br>";
-echo "phone: " . $s31 . "<br>";
-echo "email: " . $s32 . "<br>";
-echo "homepage: " . $s33 . "<br>";
-echo "c1name: " . $s30 . "<br>";
-echo "members: " . $s20 . "<br>";
-echo "elders: " . $s21 . "<br>";
-echo "ministerstatus: " . $s22 . "<br>";
-echo "multi_campus: " . $multi_campus . "<br>";
-echo "instrumental: " . $instrumental . "<br>";
-echo "both_i_a: " . $both_i_a . "<br>";
-echo "egalitarian: " . $egalitarian . "<br>";
-echo "hours: " . $s34 . "<br>";
-echo "character: " . $s23 . "<br>";
-echo "class: " . $s35 . "<br>";
+// YOUR WORK (APPENDING TO QUERY)
+$q = "INSERT INTO pending_registry SET ";
+$q .= " fname='" . $s10 . "', ";
+$q .= " addressline1='" . $s11 . "', ";
+$q .= " addressline2='" . $s12 . "', ";
+$q .= " addresscity='" . $s13 . "', ";
+$q .= " addressstate='" . $s14 . "', ";
+$q .= " addresspostalcode='" . $s15 . "', ";
+$q .= " addresscounty='" . addslashes(trim($county)) . "', ";
+$q .= " addresscountrycode='" . $s17 . "', ";
+$q .= " size='" . $s20 . "', ";
+$q .= " url='" . $s33 . "', ";
+$q .= " email='" . $s32 . "', ";
+$q .= " phone='" . $s31 . "', ";
+$q .= " contact='" . $s30 . "', ";
+$q .= " qa1='" . $s42 . "', ";
+$q .= " qa2='" . $s34 . "', ";
+$q .= " qa3='" . $s21 . "', ";
+$q .= " qa4='" . $s22 . "', ";
 
+$q .= " providername='" . $_REQUEST["realname"] . "', ";
+$q .= " provideremail='" . $_REQUEST["youremail"] . "', ";
+
+$q .= " instrumental='" . $instrumental . "', ";
+$q .= " both_i_a='" . $both_i_a . "', ";
+$q .= " multi_campus='" . $multi_campus . "', ";
+$q .= " egalitarian='" . $egalitarian . "', ";
+
+$q .= " flattitude='" . $lat . "', ";
+$q .= " flongitude='" . $lng . "', ";
+$nowtime = time();
+$q .= " geocoded='" . $nowtime . "', ";
+//$q .= " class='" . $s35 . "', ";
+$q .= " class='" .    $nowtime . "', ";
+$q .= " modified='" . $nowtime . "', ";
+$q .= " ipaddress='" . $ip . "', ";
+$q .= " uid='" . 1 . "'; ";
+
+
+//        all this is in config.php on line 2
+//        if( !($dbLink = mysqli_connect($dbhostname, $dblogin, $dbpassword))) {
+//                 print("Failed phase1 to connect to server 1!\n");
+//                 print("Request Aborted!\n");
+//                 exit();
+//        }
+
+//        if( ! mysqli_select_db($dbLink, $dbname) ) {
+//                 print("Failed phase2 to connect to database on server2!<BR>\n");
+//                 print("Request Aborted!\n");
+//                 exit();
+//        }
+
+if ($result = mysqli_query($dbLink, $q)) {
+  $numRows = mysqli_affected_rows($dbLink);
+  // Return the number of rows in result set
+  //printf("Result set has %d rows.\n",$numRows);
+  //print "INSERTED RECORD SUCCESSFULLY";
+} else {
+  print "failed to insert for some reason";
+}
+print "$numRows WAS successfully inserted, thanks!";
+// Redirect the user to another page
+header("Location: thanks.html");
+exit();
+
+// MY WORK (PREPARED SQL STATEMENT USING mysqli_prepare AND mysqli_stmt_bind_param FUNCTIONS)
 $sql = "INSERT INTO pending_registry
           (
             fname, 
@@ -105,7 +144,6 @@ $sql = "INSERT INTO pending_registry
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $stmt = mysqli_prepare($dbLink, $sql);
-// $stmt = $pdo->prepare($sql);
 
 mysqli_stmt_bind_param(
   $stmt,
@@ -143,17 +181,11 @@ mysqli_stmt_bind_param(
 );
 
 mysqli_stmt_execute($stmt);
-// $stmt->execute();
-
 $dbResult = mysqli_stmt_get_result($stmt);
-
 echo "dbResult: " . $dbResult . "<br>";
 
-// if ($stmt->rowCount() > 0) {
-//   echo "Record inserted successfully.";
-// } else {
-//   echo "Error inserting record.";
-// }
+header("Location: thanks.html");
+exit();
 
 function validated_searchname($input)
 {
@@ -165,42 +197,3 @@ function validated_searchname($input)
     exit();
   }
 }
-?>
-
-<!DOCTYPE html>
-<html data-bs-theme="light" lang="en" style>
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
-  <title>New CZ Layout</title>
-</head>
-
-<body>
-  <header id="header">
-    <div class="container">
-      <div class="row">
-        <div class="col-12 col-md-4"><a href="index.html"><img src="brand-logo.png" style="width: 100%;" /></a></div>
-        <div class="col-12 col-md-8 d-flex justify-content-center align-items-center">
-          <h3 class="text-center">New Place Inserted</h3>
-        </div>
-      </div>
-    </div>
-    <section class="d-flex justify-content-center align-items-center" style="padding: 1rem 0;"><a href="about.html" style="font-size: 12px;margin: auto 0.25rem;">About Us</a><a href="recent.html" style="font-size: 12px;margin: auto 0.25rem;">Recent Changes</a><a href="newplace.html" style="font-size: 12px;margin: auto 0.25rem;">Add New Record</a><a href="otherdirectories.html" style="font-size: 12px;margin: auto 0.25rem;">Other Directories</a><a href="login.html" style="font-size: 12px;margin: auto 0.25rem;">Admin</a></section>
-  </header>
-  <section class="py-4 py-xl-5">
-    <div class="container">
-      <div class="text-center p-4 p-lg-5">
-        <h1 class="fw-bold mb-4">Thank You!</h1>
-      </div>
-    </div>
-  </section>
-  <footer id="footer">
-    <section class="d-flex flex-column justify-content-center align-items-center flex-md-row" style="padding: 1rem 0;"><a href="about.html" style="font-size: 12px;margin: auto 0.5rem;">About Us</a><a href="recent.html" style="font-size: 12px;margin: auto 0.5rem;">Recent Changes</a><a href="newplace.html" style="font-size: 12px;margin: auto 0.5rem;">Add New Record</a><a href="otherdirectories.html" style="font-size: 12px;margin: auto 0.5rem;">Other Directories</a><a href="statisticalsummary.html" style="font-size: 12px;margin: auto 0.5rem;">Statistics</a><a href="login.html" style="font-size: 12px;margin: auto 0.5rem;">Admin</a></section>
-    <section style="padding: 1rem 0;">
-      <h6 style="text-align: center;"><span style="color: black;">Copyright @2023 All Rights Reserved</span></h6>
-    </section>
-  </footer>
-</body>
-
-</html>
