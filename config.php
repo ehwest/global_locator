@@ -70,3 +70,4 @@ $api_key = "AIzaSyDMkJzhYqS8mzIDIv4G8wRCEqhzVITuUgw";
            //      } else {//not on blacklist
            //     print ( "Not on blacklist ");
            //     }
+?>
